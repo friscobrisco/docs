@@ -18,12 +18,12 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:hi@serpa.cloud"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "CloudBook",
+    "url": "https://en.serpa.cloud/"
   },
   "tabs": [
     {
@@ -39,23 +39,18 @@
     },
     {
       "name": "Community",
-      "icon": "slack",
+      "icon": "Discord",
       "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
-      "pages": ["introduction", "quickstart", "development","troubleshoot"]
+      "group": "Fundamentals",
+      "pages": ["introduction", "apps", "compilations","deployments"]
     },
     {
-      "group": "Essentials",
-      "pages": ["essentials/markdown", "essentials/code", "essentials/images", "essentials/settings", "essentials/navigation"]
+      "group": "Advanced",
+      "pages": ["Environments", "Clusters", "Router rules", "Load balancing", "Billing"]
     },
     {
       "group": "API Documentation",
