@@ -1,33 +1,338 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'GraphQL API'
+description: 'The following documentation will be described in terms of'
+---
+## Prerequisites
+
+### Content-Type
+
+All requests must include the `Content-type` header with the value `application/json`.
+
+### Authentication
+
+To authenticate the requests, you should add the `Authorization` header with a Bearer Token using your API Key.
+
+```jsx
+{
+  "headers": {
+    "Content-type": "application/json",
+    "Authorization": "Bearer YOUR_API_KEY"
+  }
+}
+
+```
+
+### Additional Considerations
+
+1. In the following documentation, there are values in the variables that start with `VAR_`. These values are variables that you should send with the parameters you need.
+2. The remaining values should be sent as documented in each use case.
+3. You will be provided with an organization ID that you will have to send wherever `VAR_ORG_KEY` appears.
+4. You will need to generate and share a Github Token that will be associated with your organization.
+
+## Apps
+
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+An app is an entity that abstracts the git repository, the type of application, and the way it is compiled. From an app, different **deployments** can be generated in different **environments**.
 
-## Welcome
+> Query to list repositories
+> 
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+```graphql
+query GitSelectorQuery($provider: GitProvider!) {
+  gitRepos(provider: $provider) {
+    id
+    name
+    url
+    ownerAvatar
+  }
+}
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+```
 
-## Authentication
-
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+> Variables
+> 
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
+{
+  "provider": "GITHUB"
+}
+
+```
+
+<aside>
+💡 Save the `id` of the repository you are going to create your ***App*** on.
+
+</aside>
+
+All apps are created by associating them with an organization or user (namespace), and app names cannot be repeated within the same namespace. To validate the availability of a name in your namespace (your organization or user), you can use the following query:
+
+> Query to validate app availability in a namespace
+> 
+
+```graphql
+query AppNameAvailabilityQuery($name: String!, $org: ID!) {
+  appNameAvailability(name: $name, org: $org)
+}
+
+```
+
+> Variables
+> 
+
+```json
+{
+  "name": "VAR_APP_NAME",
+  "org": "VAR_ORG_KEY"
+}
+
+```
+
+> Mutation to create backend app
+> 
+
+```graphql
+mutation CreateAppMutation(
+  $input: AppInput!
+  $triggerCompilation: Boolean
+) {
+  createApp(input: $input, triggerCompilation: $triggerCompilation) {
+    id
+    name
+    createdAtFormatted
   }
-]
+}
+
+```
+
+> Variables
+> 
+
+```json
+{
+  "input": {
+    "env": [],
+    "name": "VAR_APP_NAME",
+    "orgId": "VAR_ORG_KEY",
+    "gitProvider": "GITHUB",
+    "source": "VAR_GIT_REPO_ID",
+    "dockerfileContent": "VAR_DOCKERFILE_CONTENT",
+    "appType": "CONTAINER",
+    "runtime": null,
+    "preInstallCommand": null,
+    "nodeVersion": null,
+    "buildCommand": null,
+    "buildPath": null,
+  }
+}
+
+```
+
+<aside>
+💡 Save the `id` of your ***App***.
+
+</aside>
+
+> Mutation to update dockerfile
+> 
+
+```graphql
+mutation UpdateAppMutation($input: PatchAppInput!) {
+  updateApp(input: $input) {
+    id
+    name
+    createdAtFormatted
+  }
+}
+
+```
+
+> Variables
+> 
+
+```json
+{
+  "input": {
+    "id": "VAR_APP_ID"
+    "env": [],
+    "dockerfileContent": "VAR_UPDATED_DOCKERFILE_CONTENT",
+    "runtime": null,
+    "preInstallCommand": null,
+    "nodeVersion": null,
+    "buildCommand": null,
+    "buildPath": null,
+  }
+}
+
+```
+
+### Compile a version of your app
+
+---
+
+To generate a **build**, the first step is to identify the point in the git history of the repository associated with the application we want to compile. For this purpose, we can compile with a **ref** that can point to a **branch** or a **tag**, and in both cases, it is also necessary to know the **full hash** of that **commit**:
+
+1. **For Tags:**
+    1. Use the latest commit on which the tag was created.
+    2. The **ref** follows the format `refs/tags/tag-name`, e.g. `refs/tags/v1.22.0`.
+2. **For branches:**
+    1. The commit must be part of the history of the specified branch.
+    2. The **ref** follows the format `refs/heads/branch-name`, e.g. `refs/heads/main`.
+
+If you don't have this information, you can list the available **branches** and **tags** for your app using the following queries:
+
+> Queries to list branches and tags
+> 
+
+```graphql
+query BranchesAndTagsQuery($appId: String!) {
+  gitBranchesByApp(appId: $appId) {
+    id
+    name
+    sha
+  }
+  gitTagsByApp(appId: $appId) {
+    id
+    name
+    sha
+  }
+}
+
+```
+
+> Variables
+> 
+
+```json
+{
+  "appId": "VAR_APP_ID"
+}
+
+```
+
+Once you have the **ref** and **sha**, you can execute the build using the following mutation:
+
+> Mutation to create a new build
+> 
+
+```graphql
+mutation BuildModalMutation($input: BuildInput!) {
+  createBuild(input: $input) {
+    id
+  }
+}
+
+```
+
+> Variables
+> 
+
+```json
+{
+  "input": {
+    "sha": "VAR_SHA",
+    "ref": "VAR_REF",
+    "appId": "VAR_APP_ID"
+  }
+}
+
+```
+
+With the ID returned by the mutation, you can check the build status and its logs using the following query:
+
+> Mutation to get build status
+> 
+
+```graphql
+query BuildStatusQuery($id: ID!) {
+  node(id: $id) {
+    id
+    ... on Build {
+      id
+      done
+      buildTime
+      status
+      logs {
+        payloads
+      }
+      artifact {
+        id
+        dockerTag
+        commitUrl
+        gitTagUrl
+        commitShaShort
+        commitDescription
+      }
+    }
+  }
+}
+
+```
+
+> Variables
+> 
+
+```json
+{
+  "id": "VAR_BUILD_ID"
+}
+
+```
+
+### Create a deployment for your app
+
+---
+
+From the same app, you can generate multiple deployments. To create a new deployment, you will need the following data collected in the previous steps:
+
+1. The ID of your app `VAR_APP_ID`.
+2. The ID of your build `VAR_BUILD_ID`.
+3. The ID of your organization `VAR_ORG_KEY`.
+4. The ID of the environment where you want to deploy:
+    1. If deploying to ***Sierra Negra***, use the key `DEFAULT`.
+    2. If deploying to a managed environment, use the ID of your environment `VAR_ENV_ID`.
+
+To obtain the ID of your environment, you can use the following query:
+
+> Query to list environments
+> 
+
+```graphql
+query EntitiesQuery(
+  $first: Int
+  $after: Cursor
+  $sort: SortInput
+  $filterMatrix: [[FilterInput]]
+) {
+  entities(
+    sort: $
+```
+
+```json
+{
+  "input": {
+    "app": "VAR_APP_ID",
+    "org": "VAR_ORG_KEY",
+    "build": "VAR_BUILD_ID",
+    "name": "VAR_DEPLOYMENT_NAME",
+    "environment": "VAR_ENV_ID",
+    "env": [
+      {
+        "name": "VAR_SOME_ENV_VAR_PROPERTY",
+        "value": "VAR_SOME_ENV_VAR_VALUE"
+      }
+    ],
+    "postStartExecCommand": [],
+    "replicas": 1,
+    "volumeMounts": [],
+    "volumes": [],
+    "privacy": "PUBLIC",
+    "enableCors": true,
+    "allowOrigin": [],
+    "allowHeaders": [],
+    "allowMethods": [],
+    "continousDeployment": "VAR_CD_RULE",
+    "patternTag": "VAR_CD_TAG_REGEXP"
+  }
+}
 ```

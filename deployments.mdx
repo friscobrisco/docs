@@ -1,0 +1,22 @@
+---
+title: Deployments  
+description: 'Unleash Possibilities and Take Control'
+---
+> We allow you to have complete end-to-end control over the deployment process, allowing you to manage every aspect of your application's release. You can easily choose which version of your application goes live, perform rollbacks if needed, and even pause deployments when necessary. Our platform provides a seamless and intuitive interface for code-to-URL publishing, giving you the flexibility to decide whether your application should have public or private access. 
+
+### Name your deployment
+To create a deployment, choose a name that helps identify it for quick rollbacks or redeployments. The name should be concise and technically appropriate.
+
+### Enable Cors
+To enable or disable Cross-Origin Resource Sharing (CORS) in your app, you can set the `enableCors` property to `true` or `false` respectively. To define which Origins, Headers, or Methods to accept in CORS mode (`allowOrigin`, `allowHeaders`, `allowMethods`):
+
+### Enable Cors Methods
+
+When enabling CORS in your app, you can define the Origins, Headers, or Methods to accept. To configure this, set the enableCors property to true and provide an array of strings with the values you want to accept. If enableCors is set to false, send an empty array []. For example, you can send ["GET", "POST", "OPTIONS"] to allow specific HTTP methods or ["*"] to allow all Origins.
+
+### Continuous deployment
+To enable continuous deployment on a branch or tag from your repository, simply specify the branch name or tag value in the continuous deployment rules. For example, you can set the continuous deployment rule to "main" for the branch or "TAG" for tags. Once you push your changes to the specified branch or create a tag that matches the rule, we will take care of automatically triggering a new build and updating the deployment. You can focus on pushing your code to Git, and we'll handle the rest.
+
+### Set Environment Variables
+
+By specifying environment variables, you can customize the behavior of your app based on specific configuration needs. These variables can include port numbers, API keys, database connection strings, or any other configuration parameters required by your application.

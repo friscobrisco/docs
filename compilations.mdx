@@ -1,0 +1,30 @@
+---
+title: Compilations  
+description: 'From Automatic Container to Cloud Code Generation'
+---
+
+> Our tool automates the application development process, ensuring fast build speed and eliminating the need for manual environment provisioning. With seamless compilation capabilities, you can quickly transform your code into a deployable format, optimizing performance for efficient deployment.
+
+
+### Choose the branch or tag from your Git Repo
+
+To generate a build, the first step is to identify the point in the git history of the repository associated with the application we want to compile. For this purpose, we can compile with a ref that can point to a branch or a tag. In both cases, it is also necessary to know the full hash of that commit.
+
+### AI Generated Docker File
+
+To streamline the process, a Dockerfile will be automatically generated based on the content of your repository. This eliminates the need for manual Dockerfile creation and ensures consistency in the deployment process.
+
+By autogenerating the Dockerfile, you can save time and effort in configuring your app. The generated Dockerfile will be tailored to your specific repository, taking into account the type of application and any dependencies or requirements.
+
+For example, if your repository contains a Node.js application, the Dockerfile will include the necessary steps to install Node.js and set up the environment. Similarly, if your repository contains a Python application, the Dockerfile will handle the installation of Python and any required packages.
+
+This automated approach ensures that your app is compiled and deployed correctly, regardless of the complexity or specificities of your repository. It simplifies the deployment process and allows you to focus on developing your application without worrying about the intricacies of Dockerfile configuration.
+
+### Custom Docker File
+
+You can customize the Dockerfile to meet the specific technical requirements of your project. This gives you the flexibility to modify and optimize it for your application. For example, you can add specific dependencies, configure environment variables, or set up specific build processes.
+
+### Logs
+
+After the container creation and app build process, consult the console logs for troubleshooting. These logs provide valuable information to identify and resolve issues during deployment. Analyze the logs to pinpoint errors, performance bottlenecks, and ensure smooth application functioning.
+For instance, check the logs for database connectivity errors or configuration issues. 
